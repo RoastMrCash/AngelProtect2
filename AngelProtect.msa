@@ -1,0 +1,40 @@
+*:/AngelProtect AdminInfo = >>>
+	@loadedregionlist = import('AR.AngelProtect.LoadedRegionList')
+	@amount = array_size(@loadedregionlist)
+	_arm(@amount.' loaded regions')
+	foreach(@loadedregionlist,@region){
+		_arm('&b '.@region)
+	}
+<<<
+
+*:/Runes = call_alias('/AngelProtect Runes')
+
+*:/AP $ = call_alias('/AngelProtect '.$)
+
+*:/AngelProtect $ = >>>
+	if(!has_permission('AP.Basic'),_are('You don\'t have access to this yet.') die())
+	@arguments = split(' ',$)
+	switch(to_lower(@arguments[0])){
+		case 'runes':
+			@total = _angelprotect_player_data(player())['Runes-Total']
+			@inuse = _angelprotect_player_data(player())['Runes-In-Use']
+			_arm('You have '.@total.' protection runes total, '.@inuse.' of which are in use.')
+			_arm('(Don\'t be alarmed, your previous runes count will be restored in a little while)')
+		case 'info':
+		case 'claim':
+		case 'buy':
+			@cname = _angelprotect_location(ploc())
+			@regiondata = _angelprotect_region_data()
+			@available = @total - @inuse
+			if(!array_index_exists(@regiondata,@cname)){
+				@success = _angelprotect_claim(@cname)
+				if(@success){
+					_arm('Your protection runes will protect this land.')
+				}else{
+					_are('You don\'t have enough runes to protect this land.')
+				}
+			}else{
+				_are('This chunk is already owned.')
+			}
+	}	
+<<<
